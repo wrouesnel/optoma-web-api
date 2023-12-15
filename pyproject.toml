@@ -1,0 +1,35 @@
+[tool.poetry]
+name = "optoma-web-api"
+version = "0.1.0"
+description = ""
+authors = ["Will Rouesnel <wrouesnel@wrouesnel.com>"]
+readme = "README.md"
+
+[tool.poetry.scripts]
+optoma = "optoma_web_api.cli:cli"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+requests = "^2.31.0"
+furl = "^2.1.3"
+passlib = "^1.7.4"
+beautifulsoup4 = "^4.12.2"
+pyparsing = "^3.1.1"
+click = "^8.1.7"
+ruamel-yaml = "^0.18.5"
+rich = "^13.7.0"
+toml = "^0.10.2"
+pyrfc3339 = "^1.1"
+tzlocal = "^5.2"
+retrying = "^1.3.4"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^7.4.3"
+pytest-cov = "^4.1.0"
+black = "^23.11.0"
+isort = "^5.13.0"
+responses = "^0.24.1"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
