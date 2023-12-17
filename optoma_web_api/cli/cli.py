@@ -107,12 +107,19 @@ def cli_power(output_func: clitypes.OutputFn, projector: Projector, power_state:
             click.echo("Power Off", err=True)
             projector.power_off()
 
+@cli.command("info")
+@pass_projector
+@pass_output_func
+def cli_info(output_func: clitypes.OutputFn, projector: Projector):
+    """Get the Unique ID of the projector"""
+    click.echo(output_func(projector.info()))
+
 @cli.command("unique-id")
 @pass_projector
 @pass_output_func
-def cli_uniqueid(output_func: clitypes.OutputFn, projector: Projector, power_state: str):
+def cli_uniqueid(output_func: clitypes.OutputFn, projector: Projector):
     """Get the Unique ID of the projector"""
-    click.echo(projector.mac_address())
+    click.echo(output_func(projector.info()["MAC Address"]))
 
 if __name__ == "__main__":
     cli()

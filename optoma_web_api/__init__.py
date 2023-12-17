@@ -287,6 +287,10 @@ class Projector:
             stop_max_attempt_number=self._retry_limit_count,
         )
 
+    @property
+    def url(self):
+        return str(self._base_url)
+
     def _check_response_for_login_scheme(self, resp) -> BeautifulSoup:
         # The projector has a tendency to dump us back into "please login" randomly,
         # so check if the result looks like HTML here.
@@ -296,13 +300,44 @@ class Projector:
             raise NotLoggedIn()
         return parsed_response
 
-    def _info(self):
+    def _info(self) -> Dict[str,str]:
         """Handle retrieving basic info from the projector"""
-        resp = self._session.post(self._base_url / "info.htm")
+        resp = self._session.get(self._base_url / "Info.htm")
         resp.raise_for_status()
         parsed_response = self._check_response_for_login_scheme(resp)
         # Seem to have received a real response, let's parse it.
-        # TODO: need a copy of a projector screen
+
+        info_div = parsed_response.select_one("div", {"classname": "tbi"})
+        info_rows = info_div.select("tr")
+
+        result: Dict[str,str] = {}
+
+        for tr in info_rows:
+            ths = tr.select("th")
+            if len(ths) > 0:
+                kvs = [ th.text for th in ths ]
+                if len(kvs) == 2:
+                    key, value = kvs[0], kvs[1]
+                else:
+                    continue
+            else:
+                tds = tr.select("td")
+                kvs = [td.text for td in tds]
+                if len(kvs) == 2:
+                    key, value = kvs[0], kvs[1]
+                else:
+                    continue
+            result[key] = value
+        return result
+
+    def info(self) -> Dict[str,str]:
+        decorator = retrying.retry(
+            retry_on_exception=self._control_retry,
+            wait_fixed=self._retry_interval_secs * 1000,
+            stop_max_attempt_number=self._retry_limit_count,
+        )
+        resp = decorator(self._info)()
+        return resp
 
     def _control(self, data=None):
         """Handle making an authenticated request to the projector"""
@@ -420,16 +455,21 @@ class Projector:
             )
         except Exception as e:
             logger.warning(f"Error sending power off command: {str(e)}")
+            raise e
 
     def power_on(self):
         try:
             self.control({"btn_powon": "Power On"})
         except Exception as e:
             logger.warning(f"Error sending power on command: {str(e)}")
+            raise e
 
-    def mac_address(self):
+    def mac_address(self) -> str:
         """Get the MAC address of the projector"""
         try:
-            self
+            info_response = self._info()
         except Exception as e:
             logger.warning(f"Error getting projector info: {str(e)}")
+            raise e
+
+        return info_response["MAC Address"]
