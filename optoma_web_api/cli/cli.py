@@ -5,11 +5,12 @@ import time
 from typing import Any, Callable
 
 import click
+import inflection
 import pyrfc3339
 from click.decorators import pass_meta_key
 from tzlocal import get_localzone
 
-from optoma_web_api import Projector
+from optoma_web_api import Projector, STATUS_VALUE_MAP, STATUS_VALUE_TO_CODE_MAP
 from optoma_web_api.cli import clitypes
 
 logger = logging.getLogger()
@@ -120,6 +121,34 @@ def cli_info(output_func: clitypes.OutputFn, projector: Projector):
 def cli_uniqueid(output_func: clitypes.OutputFn, projector: Projector):
     """Get the Unique ID of the projector"""
     click.echo(output_func(projector.info()["MAC Address"]))
+
+@cli.group("control")
+def cli_control():
+    """Issue a control command to the projector"""
+
+def _make_control_command(name: str) -> click.Command:
+    """Make a control command for the projector"""
+    friendly_name = name
+    command_name = inflection.parameterize(name)
+    fn_name = inflection.underscore(name)
+
+    @click.command(command_name)
+    @click.argument("value", type=click.Choice(STATUS_VALUE_TO_CODE_MAP[name]))
+    @pass_projector
+    @pass_output_func
+    def _control_cmd(output_func: clitypes.OutputFn, projector: Projector, value: str):
+        projector_cmd = getattr(projector, fn_name)
+        click.echo(friendly_name, err=True)
+        projector_cmd(value)
+
+    _control_cmd.__doc__ = f"{friendly_name}"
+
+    return _control_cmd
+
+
+
+for name in STATUS_VALUE_TO_CODE_MAP:
+    cli_control.add_command(_make_control_command(name))
 
 if __name__ == "__main__":
     cli()

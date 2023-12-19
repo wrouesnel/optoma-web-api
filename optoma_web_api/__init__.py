@@ -208,6 +208,15 @@ STATUS_VALUE_MAP = {
     },
 }
 
+# Back-mapping of values to codes
+STATUS_VALUE_TO_CODE_MAP = { k: { sv:sk for sk,sv in STATUS_VALUE_MAP[k].items() } for k in [ k for k in STATUS_VALUE_MAP if isinstance(STATUS_VALUE_MAP[k], typing.Mapping) ] }
+
+# Map of names to buttons which have no status representation
+BUTTONS = {
+    "Resync": "resync",
+    "Reset": "reset",
+}
+
 STATUS_TO_NAME_MAP = {
     "pw": "Power Status",
     "a": "Source",
@@ -256,7 +265,6 @@ STATUS_TO_NAME_MAP = {
     "g": None,  ## Display mode?
     "Z": None,  ## Src select display?
 }
-
 
 class Projector:
     def __init__(
@@ -464,6 +472,264 @@ class Projector:
     def power_on(self):
         try:
             self.control({"btn_powon": "Power On"})
+        except Exception as e:
+            logger.warning(f"Error sending power on command: {str(e)}")
+            raise e
+
+    def resync(self):
+        try:
+            self.control({"resync": "Resync"})
+        except Exception as e:
+            logger.warning(f"Error sending power on command: {str(e)}")
+            raise e
+
+    def reset(self):
+        try:
+            self.control({"reset": "Reset"})
+        except Exception as e:
+            logger.warning(f"Error sending power on command: {str(e)}")
+            raise e
+
+    def avmute(self):
+        try:
+            self.control({"avmute": "AV Mute"})
+        except Exception as e:
+            logger.warning(f"Error sending power on command: {str(e)}")
+            raise e
+
+    def freeze(self):
+        try:
+            self.control({"freeze": "AV Mute"})
+        except Exception as e:
+            logger.warning(f"Error sending power on command: {str(e)}")
+            raise e
+
+    def infohide(self):
+        try:
+            self.control({"infohide": "Information Hide"})
+        except Exception as e:
+            logger.warning(f"Error sending power on command: {str(e)}")
+            raise e
+
+    def altitude(self):
+        try:
+            self.control({"altitude": "High Altitude"})
+        except Exception as e:
+            logger.warning(f"Error sending power on command: {str(e)}")
+            raise e
+
+    def keypad(self):
+        try:
+            self.control({"keypad": "Keypad Lock"})
+        except Exception as e:
+            logger.warning(f"Error sending power on command: {str(e)}")
+            raise e
+
+    def dismdlocked(self):
+        try:
+            self.control({"dismdlocked": "Display Mode Lock"})
+        except Exception as e:
+            logger.warning(f"Error sending power on command: {str(e)}")
+            raise e
+
+    def directpwon(self):
+        try:
+            self.control({"directpwon": "Direct Power On"})
+        except Exception as e:
+            logger.warning(f"Error sending power on command: {str(e)}")
+            raise e
+
+    def alwayson(self):
+        try:
+            self.control({"alwayson": "Always On"})
+        except Exception as e:
+            logger.warning(f"Error sending power on command: {str(e)}")
+            raise e
+
+    def source(self, value: typing.Union[int,str]):
+        set_value = str(value) if isinstance(value, int) else STATUS_VALUE_TO_CODE_MAP[value]
+        try:
+            self.control({"source": set_value})
+        except Exception as e:
+            logger.warning(f"Error sending power on command: {str(e)}")
+            raise e
+
+    def brightness(self, value: int):
+        set_value = str(value)
+        try:
+            self.control({"bright": set_value})
+        except Exception as e:
+            logger.warning(f"Error sending power on command: {str(e)}")
+            raise e
+
+    def contrast(self, value: int):
+        set_value = str(value)
+        try:
+            self.control({"contrast": set_value})
+        except Exception as e:
+            logger.warning(f"Error sending power on command: {str(e)}")
+            raise e
+
+    def sharpness(self, value: int):
+        # Note: apparently cannot be set below 1?
+        set_value = str(value)
+        try:
+            self.control({"Sharp": set_value})
+        except Exception as e:
+            logger.warning(f"Error sending power on command: {str(e)}")
+            raise e
+
+    def phase(self, value: int):
+        # Note: not sure when you can set this?
+        set_value = str(value)
+        try:
+            self.control({"Phase": set_value})
+        except Exception as e:
+            logger.warning(f"Error sending power on command: {str(e)}")
+            raise e
+
+    def brilliantcolor(self, value: int):
+        # Note: apparently can't actually be set below 1?
+        set_value = str(value)
+        try:
+            self.control({"brill": set_value})
+        except Exception as e:
+            logger.warning(f"Error sending power on command: {str(e)}")
+            raise e
+
+    def gamma(self, value: typing.Union[int,str]):
+        # Note: AFAIK 255 means "N/A"
+        set_value = str(value) if isinstance(value, int) else STATUS_VALUE_TO_CODE_MAP[value]
+        try:
+            self.control({"Degamma": set_value})
+        except Exception as e:
+            logger.warning(f"Error sending power on command: {str(e)}")
+            raise e
+
+    def color_temperature(self, value: typing.Union[int,str]):
+        set_value = str(value) if isinstance(value, int) else STATUS_VALUE_TO_CODE_MAP[value]
+        try:
+            self.control({"colortmp": set_value})
+        except Exception as e:
+            logger.warning(f"Error sending power on command: {str(e)}")
+            raise e
+
+    def display_mode(self, value: typing.Union[int,str]):
+        set_value = str(value) if isinstance(value, int) else STATUS_VALUE_TO_CODE_MAP[value]
+        try:
+            self.control({"dismode": set_value})
+        except Exception as e:
+            logger.warning(f"Error sending power on command: {str(e)}")
+            raise e
+
+    def color_space(self, value: typing.Union[int,str]):
+        set_value = str(value) if isinstance(value, int) else STATUS_VALUE_TO_CODE_MAP[value]
+        try:
+            self.control({"colorsp": set_value})
+        except Exception as e:
+            logger.warning(f"Error sending power on command: {str(e)}")
+            raise e
+
+    def aspect_ratio(self, value: typing.Union[int,str]):
+        set_value = str(value) if isinstance(value, int) else STATUS_VALUE_TO_CODE_MAP[value]
+        try:
+            self.control({"aspect1": set_value})
+        except Exception as e:
+            logger.warning(f"Error sending power on command: {str(e)}")
+            raise e
+
+    def projection(self, value: typing.Union[int,str]):
+        set_value = str(value) if isinstance(value, int) else STATUS_VALUE_TO_CODE_MAP[value]
+        try:
+            self.control({"projection": set_value})
+        except Exception as e:
+            logger.warning(f"Error sending power on command: {str(e)}")
+            raise e
+
+    def zoom(self, value: int):
+        set_value = str(value)
+        try:
+            self.control({"zoom": set_value})
+        except Exception as e:
+            logger.warning(f"Error sending power on command: {str(e)}")
+            raise e
+
+    def horizontal_image_shift(self, value: int):
+        set_value = str(value)
+        try:
+            self.control({"hpos": set_value})
+        except Exception as e:
+            logger.warning(f"Error sending power on command: {str(e)}")
+            raise e
+
+    def vertical_image_shift(self, value: int):
+        set_value = str(value)
+        try:
+            self.control({"vpos": set_value})
+        except Exception as e:
+            logger.warning(f"Error sending power on command: {str(e)}")
+            raise e
+
+    def auto_power_off(self, value: int):
+        set_value = str(value)
+        try:
+            self.control({"autopw": set_value})
+        except Exception as e:
+            logger.warning(f"Error sending power on command: {str(e)}")
+            raise e
+
+    def sleep_timer(self, value: int):
+        set_value = str(value)
+        try:
+            self.control({"sleep": set_value})
+        except Exception as e:
+            logger.warning(f"Error sending power on command: {str(e)}")
+            raise e
+
+    def projector_id(self, value: int):
+        set_value = str(value)
+        try:
+            self.control({"projid": set_value})
+        except Exception as e:
+            logger.warning(f"Error sending power on command: {str(e)}")
+            raise e
+
+    def background_color(self, value: typing.Union[int,str]):
+        set_value = str(value) if isinstance(value, int) else STATUS_VALUE_TO_CODE_MAP[value]
+        try:
+            self.control({"background": set_value})
+        except Exception as e:
+            logger.warning(f"Error sending power on command: {str(e)}")
+            raise e
+
+    def wall_color(self, value: typing.Union[int,str]):
+        set_value = str(value) if isinstance(value, int) else STATUS_VALUE_TO_CODE_MAP[value]
+        try:
+            self.control({"wall": set_value})
+        except Exception as e:
+            logger.warning(f"Error sending power on command: {str(e)}")
+            raise e
+
+    def logo(self, value: typing.Union[int,str]):
+        set_value = str(value) if isinstance(value, int) else STATUS_VALUE_TO_CODE_MAP[value]
+        try:
+            self.control({"logo": set_value})
+        except Exception as e:
+            logger.warning(f"Error sending power on command: {str(e)}")
+            raise e
+
+    def power_mode(self, value: typing.Union[int,str]):
+        set_value = str(value) if isinstance(value, int) else STATUS_VALUE_TO_CODE_MAP[value]
+        try:
+            self.control({"pwmode": set_value})
+        except Exception as e:
+            logger.warning(f"Error sending power on command: {str(e)}")
+            raise e
+
+    def brightness_mode(self, value: typing.Union[int,str]):
+        set_value = str(value) if isinstance(value, int) else STATUS_VALUE_TO_CODE_MAP[value]
+        try:
+            self.control({"lampmd": set_value})
         except Exception as e:
             logger.warning(f"Error sending power on command: {str(e)}")
             raise e
