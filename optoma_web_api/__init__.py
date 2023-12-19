@@ -476,74 +476,82 @@ class Projector:
             logger.warning(f"Error sending power on command: {str(e)}")
             raise e
 
+    def power_status(self, value: typing.Union[int,str]):
+        """Power Status is a specialized control command because it doesn't quite map to the interface"""
+        set_value = str(value) if isinstance(value, int) else STATUS_VALUE_TO_CODE_MAP[value]
+        if set_value == "1":
+            return self.power_on()
+        else:
+            return self.power_off()
+
     def resync(self):
         try:
             self.control({"resync": "Resync"})
         except Exception as e:
-            logger.warning(f"Error sending power on command: {str(e)}")
+            logger.warning(f"Error sending resync command: {str(e)}")
             raise e
 
     def reset(self):
         try:
             self.control({"reset": "Reset"})
         except Exception as e:
-            logger.warning(f"Error sending power on command: {str(e)}")
+            logger.warning(f"Error sending reset command: {str(e)}")
             raise e
 
     def avmute(self):
         try:
             self.control({"avmute": "AV Mute"})
         except Exception as e:
-            logger.warning(f"Error sending power on command: {str(e)}")
+            logger.warning(f"Error sending avmute command: {str(e)}")
             raise e
 
     def freeze(self):
         try:
             self.control({"freeze": "AV Mute"})
         except Exception as e:
-            logger.warning(f"Error sending power on command: {str(e)}")
+            logger.warning(f"Error sending freeze command: {str(e)}")
             raise e
 
     def infohide(self):
         try:
             self.control({"infohide": "Information Hide"})
         except Exception as e:
-            logger.warning(f"Error sending power on command: {str(e)}")
+            logger.warning(f"Error sending infohide command: {str(e)}")
             raise e
 
     def altitude(self):
         try:
             self.control({"altitude": "High Altitude"})
         except Exception as e:
-            logger.warning(f"Error sending power on command: {str(e)}")
+            logger.warning(f"Error sending altitude command: {str(e)}")
             raise e
 
     def keypad(self):
         try:
             self.control({"keypad": "Keypad Lock"})
         except Exception as e:
-            logger.warning(f"Error sending power on command: {str(e)}")
+            logger.warning(f"Error sending keypad command: {str(e)}")
             raise e
 
     def dismdlocked(self):
         try:
             self.control({"dismdlocked": "Display Mode Lock"})
         except Exception as e:
-            logger.warning(f"Error sending power on command: {str(e)}")
+            logger.warning(f"Error sending dismdlocked command: {str(e)}")
             raise e
 
     def directpwon(self):
         try:
             self.control({"directpwon": "Direct Power On"})
         except Exception as e:
-            logger.warning(f"Error sending power on command: {str(e)}")
+            logger.warning(f"Error sending directpwon command: {str(e)}")
             raise e
 
     def alwayson(self):
         try:
             self.control({"alwayson": "Always On"})
         except Exception as e:
-            logger.warning(f"Error sending power on command: {str(e)}")
+            logger.warning(f"Error sending alwayson command: {str(e)}")
             raise e
 
     def source(self, value: typing.Union[int,str]):
@@ -551,7 +559,7 @@ class Projector:
         try:
             self.control({"source": set_value})
         except Exception as e:
-            logger.warning(f"Error sending power on command: {str(e)}")
+            logger.warning(f"Error sending source command: {str(e)}")
             raise e
 
     def brightness(self, value: int):
@@ -559,7 +567,7 @@ class Projector:
         try:
             self.control({"bright": set_value})
         except Exception as e:
-            logger.warning(f"Error sending power on command: {str(e)}")
+            logger.warning(f"Error sending brightness command: {str(e)}")
             raise e
 
     def contrast(self, value: int):
@@ -567,7 +575,7 @@ class Projector:
         try:
             self.control({"contrast": set_value})
         except Exception as e:
-            logger.warning(f"Error sending power on command: {str(e)}")
+            logger.warning(f"Error sending contrast command: {str(e)}")
             raise e
 
     def sharpness(self, value: int):
@@ -576,7 +584,7 @@ class Projector:
         try:
             self.control({"Sharp": set_value})
         except Exception as e:
-            logger.warning(f"Error sending power on command: {str(e)}")
+            logger.warning(f"Error sending sharpness command: {str(e)}")
             raise e
 
     def phase(self, value: int):
@@ -585,7 +593,7 @@ class Projector:
         try:
             self.control({"Phase": set_value})
         except Exception as e:
-            logger.warning(f"Error sending power on command: {str(e)}")
+            logger.warning(f"Error sending phase command: {str(e)}")
             raise e
 
     def brilliantcolor(self, value: int):
@@ -594,7 +602,7 @@ class Projector:
         try:
             self.control({"brill": set_value})
         except Exception as e:
-            logger.warning(f"Error sending power on command: {str(e)}")
+            logger.warning(f"Error sending brilliantcolor command: {str(e)}")
             raise e
 
     def gamma(self, value: typing.Union[int,str]):
@@ -603,7 +611,7 @@ class Projector:
         try:
             self.control({"Degamma": set_value})
         except Exception as e:
-            logger.warning(f"Error sending power on command: {str(e)}")
+            logger.warning(f"Error sending gamma command: {str(e)}")
             raise e
 
     def color_temperature(self, value: typing.Union[int,str]):
@@ -611,7 +619,7 @@ class Projector:
         try:
             self.control({"colortmp": set_value})
         except Exception as e:
-            logger.warning(f"Error sending power on command: {str(e)}")
+            logger.warning(f"Error sending color_temperature command: {str(e)}")
             raise e
 
     def display_mode(self, value: typing.Union[int,str]):
@@ -619,7 +627,7 @@ class Projector:
         try:
             self.control({"dismode": set_value})
         except Exception as e:
-            logger.warning(f"Error sending power on command: {str(e)}")
+            logger.warning(f"Error sending display_mode command: {str(e)}")
             raise e
 
     def color_space(self, value: typing.Union[int,str]):
@@ -627,7 +635,7 @@ class Projector:
         try:
             self.control({"colorsp": set_value})
         except Exception as e:
-            logger.warning(f"Error sending power on command: {str(e)}")
+            logger.warning(f"Error sending color_space command: {str(e)}")
             raise e
 
     def aspect_ratio(self, value: typing.Union[int,str]):
@@ -635,7 +643,7 @@ class Projector:
         try:
             self.control({"aspect1": set_value})
         except Exception as e:
-            logger.warning(f"Error sending power on command: {str(e)}")
+            logger.warning(f"Error sending aspect_ratio command: {str(e)}")
             raise e
 
     def projection(self, value: typing.Union[int,str]):
@@ -643,7 +651,7 @@ class Projector:
         try:
             self.control({"projection": set_value})
         except Exception as e:
-            logger.warning(f"Error sending power on command: {str(e)}")
+            logger.warning(f"Error sending projection command: {str(e)}")
             raise e
 
     def zoom(self, value: int):
@@ -651,7 +659,7 @@ class Projector:
         try:
             self.control({"zoom": set_value})
         except Exception as e:
-            logger.warning(f"Error sending power on command: {str(e)}")
+            logger.warning(f"Error sending zoom command: {str(e)}")
             raise e
 
     def horizontal_image_shift(self, value: int):
@@ -659,7 +667,7 @@ class Projector:
         try:
             self.control({"hpos": set_value})
         except Exception as e:
-            logger.warning(f"Error sending power on command: {str(e)}")
+            logger.warning(f"Error sending horizontal_image_shift command: {str(e)}")
             raise e
 
     def vertical_image_shift(self, value: int):
@@ -667,7 +675,7 @@ class Projector:
         try:
             self.control({"vpos": set_value})
         except Exception as e:
-            logger.warning(f"Error sending power on command: {str(e)}")
+            logger.warning(f"Error sending vertical_image_shift command: {str(e)}")
             raise e
 
     def auto_power_off(self, value: int):
@@ -675,7 +683,7 @@ class Projector:
         try:
             self.control({"autopw": set_value})
         except Exception as e:
-            logger.warning(f"Error sending power on command: {str(e)}")
+            logger.warning(f"Error sending auto_power_off command: {str(e)}")
             raise e
 
     def sleep_timer(self, value: int):
@@ -683,7 +691,7 @@ class Projector:
         try:
             self.control({"sleep": set_value})
         except Exception as e:
-            logger.warning(f"Error sending power on command: {str(e)}")
+            logger.warning(f"Error sending sleep_timer command: {str(e)}")
             raise e
 
     def projector_id(self, value: int):
@@ -691,7 +699,7 @@ class Projector:
         try:
             self.control({"projid": set_value})
         except Exception as e:
-            logger.warning(f"Error sending power on command: {str(e)}")
+            logger.warning(f"Error sending projector_id command: {str(e)}")
             raise e
 
     def background_color(self, value: typing.Union[int,str]):
@@ -699,7 +707,7 @@ class Projector:
         try:
             self.control({"background": set_value})
         except Exception as e:
-            logger.warning(f"Error sending power on command: {str(e)}")
+            logger.warning(f"Error sending background_color command: {str(e)}")
             raise e
 
     def wall_color(self, value: typing.Union[int,str]):
@@ -707,7 +715,7 @@ class Projector:
         try:
             self.control({"wall": set_value})
         except Exception as e:
-            logger.warning(f"Error sending power on command: {str(e)}")
+            logger.warning(f"Error sending wall_color command: {str(e)}")
             raise e
 
     def logo(self, value: typing.Union[int,str]):
@@ -715,7 +723,7 @@ class Projector:
         try:
             self.control({"logo": set_value})
         except Exception as e:
-            logger.warning(f"Error sending power on command: {str(e)}")
+            logger.warning(f"Error sending logo command: {str(e)}")
             raise e
 
     def power_mode(self, value: typing.Union[int,str]):
@@ -723,7 +731,7 @@ class Projector:
         try:
             self.control({"pwmode": set_value})
         except Exception as e:
-            logger.warning(f"Error sending power on command: {str(e)}")
+            logger.warning(f"Error sending power_mode command: {str(e)}")
             raise e
 
     def brightness_mode(self, value: typing.Union[int,str]):
@@ -731,7 +739,7 @@ class Projector:
         try:
             self.control({"lampmd": set_value})
         except Exception as e:
-            logger.warning(f"Error sending power on command: {str(e)}")
+            logger.warning(f"Error sending brightness_mode command: {str(e)}")
             raise e
 
     def mac_address(self) -> str:

@@ -93,21 +93,6 @@ def status(output_func: clitypes.OutputFn, projector: Projector, monitor: bool, 
             break
         time.sleep(1)
 
-
-@cli.command("power")
-@click.argument("power_state", type=click.Choice(("on", "off"), case_sensitive=False))
-@pass_projector
-@pass_output_func
-def cli_power(output_func: clitypes.OutputFn, projector: Projector, power_state: str):
-    """Send projector power command"""
-    match power_state:
-        case "on":
-            click.echo("Power On", err=True)
-            projector.power_on()
-        case "off":
-            click.echo("Power Off", err=True)
-            projector.power_off()
-
 @cli.command("info")
 @pass_projector
 @pass_output_func
@@ -133,7 +118,7 @@ def _make_control_command(name: str) -> click.Command:
     fn_name = inflection.underscore(name)
 
     @click.command(command_name)
-    @click.argument("value", type=click.Choice(STATUS_VALUE_TO_CODE_MAP[name]))
+    @click.argument("value", type=click.Choice(STATUS_VALUE_TO_CODE_MAP[name], case_sensitive=False))
     @pass_projector
     @pass_output_func
     def _control_cmd(output_func: clitypes.OutputFn, projector: Projector, value: str):
