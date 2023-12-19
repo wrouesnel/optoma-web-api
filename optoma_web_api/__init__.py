@@ -74,6 +74,7 @@ STATUS_VALUE_MAP = {
         "6": "Game",
         "7": "sRGB",
         "8": "DICOM SIM",
+        "9": "HDR2",
         "255": VALUE_NOT_AVAILABLE,
     },
     "Brightness": int,
@@ -353,6 +354,9 @@ class Projector:
             self._logged_in = False
             self._login()
             logger.debug("Login successful, retrying")
+            return True
+        elif isinstance(exception, requests.exceptions.ConnectionError):
+            # Always retry a connection error
             return True
         return False
 
