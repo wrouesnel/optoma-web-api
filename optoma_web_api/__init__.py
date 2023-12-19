@@ -370,8 +370,7 @@ class Projector:
 
     def control(self, data=None):
         """Send a request to the projector web interface"""
-        # if not self._logged_in:
-        #     self._login()
+        logger.debug("Sending control command: %s" % data)
         decorator = retrying.retry(
             retry_on_exception=self._control_retry,
             wait_fixed=self._retry_interval_secs * 1000,
@@ -478,7 +477,7 @@ class Projector:
 
     def power_status(self, value: typing.Union[int,str]):
         """Power Status is a specialized control command because it doesn't quite map to the interface"""
-        set_value = str(value) if isinstance(value, int) else STATUS_VALUE_TO_CODE_MAP[value]
+        set_value = str(value) if isinstance(value, int) else STATUS_VALUE_TO_CODE_MAP["Power Status"][value]
         if set_value == "1":
             return self.power_on()
         else:
@@ -498,64 +497,121 @@ class Projector:
             logger.warning(f"Error sending reset command: {str(e)}")
             raise e
 
-    def avmute(self):
+    # Begin "toggle" options which we have to derive a state handler for
+    def _av_mute(self):
         try:
             self.control({"avmute": "AV Mute"})
         except Exception as e:
             logger.warning(f"Error sending avmute command: {str(e)}")
             raise e
 
-    def freeze(self):
+    def av_mute(self, value: typing.Union[int,str]):
+        name = "AV Mute"
+        set_value = STATUS_VALUE_MAP[name][str(value)] if isinstance(value, int) else value
+
+        if self.status()[name] != set_value:
+            return self._av_mute()
+
+    def _freeze(self):
         try:
             self.control({"freeze": "AV Mute"})
         except Exception as e:
             logger.warning(f"Error sending freeze command: {str(e)}")
             raise e
 
-    def infohide(self):
+    def freeze(self, value: typing.Union[int,str]):
+        name = "Freeze"
+        set_value = STATUS_VALUE_MAP[name][str(value)] if isinstance(value, int) else value
+
+        if self.status()[name] != set_value:
+            return self._freeze()
+
+    def _information_hide(self):
         try:
             self.control({"infohide": "Information Hide"})
         except Exception as e:
             logger.warning(f"Error sending infohide command: {str(e)}")
             raise e
 
-    def altitude(self):
+    def information_hide(self, value: typing.Union[int,str]):
+        name = "Information Hide"
+        set_value = STATUS_VALUE_MAP[name][str(value)] if isinstance(value, int) else value
+
+        if self.status()[name] != set_value:
+            return self._information_hide()
+
+    def _altitude(self):
         try:
             self.control({"altitude": "High Altitude"})
         except Exception as e:
             logger.warning(f"Error sending altitude command: {str(e)}")
             raise e
 
-    def keypad(self):
+    def altitude(self, value: typing.Union[int,str]):
+        name = "Altitude"
+        set_value = STATUS_VALUE_MAP[name][str(value)] if isinstance(value, int) else value
+
+        if self.status()[name] != set_value:
+            return self._altitude()
+
+    def _keypad_lock(self):
         try:
             self.control({"keypad": "Keypad Lock"})
         except Exception as e:
             logger.warning(f"Error sending keypad command: {str(e)}")
             raise e
 
-    def dismdlocked(self):
+    def keypad_lock(self, value: typing.Union[int,str]):
+        name = "Keypad Lock"
+        set_value = STATUS_VALUE_MAP[name][str(value)] if isinstance(value, int) else value
+
+        if self.status()[name] != set_value:
+            return self._keypad_lock()
+
+    def _display_mode_lock(self):
         try:
             self.control({"dismdlocked": "Display Mode Lock"})
         except Exception as e:
             logger.warning(f"Error sending dismdlocked command: {str(e)}")
             raise e
 
-    def directpwon(self):
+    def display_mode_lock(self, value: typing.Union[int,str]):
+        name = "Display Mode Lock"
+        set_value = STATUS_VALUE_MAP[name][str(value)] if isinstance(value, int) else value
+
+        if self.status()[name] != set_value:
+            return self._display_mode_lock()
+
+    def _direct_power_on(self):
         try:
             self.control({"directpwon": "Direct Power On"})
         except Exception as e:
             logger.warning(f"Error sending directpwon command: {str(e)}")
             raise e
 
-    def alwayson(self):
+    def direct_power_on(self, value: typing.Union[int,str]):
+        name = "Direct Power On"
+        set_value = STATUS_VALUE_MAP[name][str(value)] if isinstance(value, int) else value
+
+        if self.status()[name] != set_value:
+            return self._direct_power_on()
+
+    def _always_on(self):
         try:
             self.control({"alwayson": "Always On"})
         except Exception as e:
             logger.warning(f"Error sending alwayson command: {str(e)}")
             raise e
 
+    def always_on(self, value: typing.Union[int,str]):
+        name = "Always On"
+        set_value = STATUS_VALUE_MAP[name][str(value)] if isinstance(value, int) else value
+
+        if self.status()[name] != set_value:
+            return self._always_on()
+
     def source(self, value: typing.Union[int,str]):
-        set_value = str(value) if isinstance(value, int) else STATUS_VALUE_TO_CODE_MAP[value]
+        set_value = str(value) if isinstance(value, int) else STATUS_VALUE_TO_CODE_MAP["Source"][value]
         try:
             self.control({"source": set_value})
         except Exception as e:
@@ -607,7 +663,7 @@ class Projector:
 
     def gamma(self, value: typing.Union[int,str]):
         # Note: AFAIK 255 means "N/A"
-        set_value = str(value) if isinstance(value, int) else STATUS_VALUE_TO_CODE_MAP[value]
+        set_value = str(value) if isinstance(value, int) else STATUS_VALUE_TO_CODE_MAP["Gamma"][value]
         try:
             self.control({"Degamma": set_value})
         except Exception as e:
@@ -615,7 +671,7 @@ class Projector:
             raise e
 
     def color_temperature(self, value: typing.Union[int,str]):
-        set_value = str(value) if isinstance(value, int) else STATUS_VALUE_TO_CODE_MAP[value]
+        set_value = str(value) if isinstance(value, int) else STATUS_VALUE_TO_CODE_MAP["Color Temperature"][value]
         try:
             self.control({"colortmp": set_value})
         except Exception as e:
@@ -623,7 +679,7 @@ class Projector:
             raise e
 
     def display_mode(self, value: typing.Union[int,str]):
-        set_value = str(value) if isinstance(value, int) else STATUS_VALUE_TO_CODE_MAP[value]
+        set_value = str(value) if isinstance(value, int) else STATUS_VALUE_TO_CODE_MAP["Display Mode"][value]
         try:
             self.control({"dismode": set_value})
         except Exception as e:
@@ -631,15 +687,15 @@ class Projector:
             raise e
 
     def color_space(self, value: typing.Union[int,str]):
-        set_value = str(value) if isinstance(value, int) else STATUS_VALUE_TO_CODE_MAP[value]
+        set_value = str(value) if isinstance(value, int) else STATUS_VALUE_TO_CODE_MAP["Color Space"][value]
         try:
-            self.control({"colorsp": set_value})
+            self.control({"colorsp1": set_value})
         except Exception as e:
             logger.warning(f"Error sending color_space command: {str(e)}")
             raise e
 
     def aspect_ratio(self, value: typing.Union[int,str]):
-        set_value = str(value) if isinstance(value, int) else STATUS_VALUE_TO_CODE_MAP[value]
+        set_value = str(value) if isinstance(value, int) else STATUS_VALUE_TO_CODE_MAP["Aspect Ratio"][value]
         try:
             self.control({"aspect1": set_value})
         except Exception as e:
@@ -647,7 +703,7 @@ class Projector:
             raise e
 
     def projection(self, value: typing.Union[int,str]):
-        set_value = str(value) if isinstance(value, int) else STATUS_VALUE_TO_CODE_MAP[value]
+        set_value = str(value) if isinstance(value, int) else STATUS_VALUE_TO_CODE_MAP["Projection"][value]
         try:
             self.control({"projection": set_value})
         except Exception as e:
@@ -703,7 +759,7 @@ class Projector:
             raise e
 
     def background_color(self, value: typing.Union[int,str]):
-        set_value = str(value) if isinstance(value, int) else STATUS_VALUE_TO_CODE_MAP[value]
+        set_value = str(value) if isinstance(value, int) else STATUS_VALUE_TO_CODE_MAP["Background Color"][value]
         try:
             self.control({"background": set_value})
         except Exception as e:
@@ -711,7 +767,7 @@ class Projector:
             raise e
 
     def wall_color(self, value: typing.Union[int,str]):
-        set_value = str(value) if isinstance(value, int) else STATUS_VALUE_TO_CODE_MAP[value]
+        set_value = str(value) if isinstance(value, int) else STATUS_VALUE_TO_CODE_MAP["Wall Color"][value]
         try:
             self.control({"wall": set_value})
         except Exception as e:
@@ -719,7 +775,7 @@ class Projector:
             raise e
 
     def logo(self, value: typing.Union[int,str]):
-        set_value = str(value) if isinstance(value, int) else STATUS_VALUE_TO_CODE_MAP[value]
+        set_value = str(value) if isinstance(value, int) else STATUS_VALUE_TO_CODE_MAP["Logo"][value]
         try:
             self.control({"logo": set_value})
         except Exception as e:
@@ -727,7 +783,7 @@ class Projector:
             raise e
 
     def power_mode(self, value: typing.Union[int,str]):
-        set_value = str(value) if isinstance(value, int) else STATUS_VALUE_TO_CODE_MAP[value]
+        set_value = str(value) if isinstance(value, int) else STATUS_VALUE_TO_CODE_MAP["Power Mode"][value]
         try:
             self.control({"pwmode": set_value})
         except Exception as e:
@@ -735,7 +791,7 @@ class Projector:
             raise e
 
     def brightness_mode(self, value: typing.Union[int,str]):
-        set_value = str(value) if isinstance(value, int) else STATUS_VALUE_TO_CODE_MAP[value]
+        set_value = str(value) if isinstance(value, int) else STATUS_VALUE_TO_CODE_MAP["Brightness Mode"][value]
         try:
             self.control({"lampmd": set_value})
         except Exception as e:
